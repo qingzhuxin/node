@@ -68,10 +68,8 @@ function user(req, res) {
     const sql = "SELECT * FROM admin  ";
     pool.getConnection(function (err, connection) {
         if (err) {
-            console.log("mysql链接失败");
             res.send(Constant.DEFAULT_ERROR)
         } else {
-            console.log("mysql链接成功！")
             connection.query(sql, function (err, results) {
                 if (err) {
                     res.send(Constant.DEFAULT_ERROR)
@@ -88,13 +86,25 @@ function user(req, res) {
  *  添加用户，向数据表插入数据
  */
 function addUser(req, res) {
-    const resObj = Common.clone(Constant.ADD_USER_SUCCESS);
     //mysql插入语句
-    const sql = `insert  into admin(username,password,role,created_at,updated_at)  values(${req.query.username},${req.query.password},${req.query.role},${utils.NowTime},${utils.NowTime})`
-    console.log(utils.NowTime());
-
+    const sql = `insert  into admin(username,password,role,created_at,updated_at)  values(${JSON.stringify(req.query.username)},${JSON.stringify(req.query.password)},${JSON.stringify(req.query.role)},${JSON.stringify(utils.NowTime())},${JSON.stringify(utils.NowTime())})`
     if (req.query.username && req.query.password && req.query.role) {
-
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                res.send(Constant.DEFAULT_ERROR)
+            } else {
+                connection.query(sql, function (error, results) {
+                    if (error) {
+                        res.send({
+                            code: 401,
+                            msg: "添加失败，请检查参数！"
+                        })
+                    } else {
+                        res.send(Constant.ADD_USER_SUCCESS)
+                    }
+                })
+            }
+        })
     } else {
         if (!req.query.username) {
             res.send(Constant.ADD_USER_ERROR_LACK_USERNAME)
@@ -108,8 +118,32 @@ function addUser(req, res) {
 
     }
 }
+function deleteUser(req, res) {
+    const sql = `delete from admin where id=${JSON.stringify(req.query.id)}`;
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            res.send(Constant.DEFAULT_ERROR)
+        } else {
+            connection.query(sql, function (err, results) {
+                if (err) {
+                    res.send({
+                        code: 401,
+                        msg: "删除失败！"
+                    })
+                } else {
+                    res.send({
+                        code: 200,
+                        msg: "删除成功！"
+                    })
+                }
+            })
+        }
+    })
+
+}
 module.exports = {
     user,
     login,
-    addUser
+    addUser,
+    deleteUser
 }

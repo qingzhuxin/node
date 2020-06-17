@@ -47,7 +47,6 @@ const obj = {
         code: 401,
         msg: "请设置用户登录密码"
     },
-
 };
 
 module.exports = obj;
