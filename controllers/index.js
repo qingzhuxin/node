@@ -3,34 +3,8 @@ const dateFormat = require("dateformat");
 const token = require("../controllers/token");
 const pool = require("../config");
 const Common = require("../controllers/common");
-/**
- * 用户列表
- * @param {*} req 
- * @param {*} res 
- */
-function user(req, res) {
-    //定义一个返回对象
-    const resObj = Common.clone(Constant.DEFAULT_SUCCESS);
-    //查询
-    const sql = "SELECT * FROM admin  ";
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            console.log("mysql链接失败");
-            res.send(Constant.DEFAULT_ERROR)
-        } else {
-            console.log("mysql链接成功！")
-            connection.query(sql, function (err, results) {
-                if (err) {
-                    res.send(Constant.DEFAULT_ERROR)
-                } else {
-                    const result = JSON.parse(JSON.stringify(results));
-                    resObj.data = result;
-                    res.send(resObj)
-                }
-            })
-        }
-    })
-}
+const utils = require("../utils");
+
 //登录
 function login(req, res) {
     //定义一个返回对象
@@ -82,7 +56,60 @@ function login(req, res) {
 
     }
 }
+/**
+ * 用户列表
+ * @param {*} req 
+ * @param {*} res 
+ */
+function user(req, res) {
+    //定义一个返回对象
+    const resObj = Common.clone(Constant.DEFAULT_SUCCESS);
+    //查询
+    const sql = "SELECT * FROM admin  ";
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            console.log("mysql链接失败");
+            res.send(Constant.DEFAULT_ERROR)
+        } else {
+            console.log("mysql链接成功！")
+            connection.query(sql, function (err, results) {
+                if (err) {
+                    res.send(Constant.DEFAULT_ERROR)
+                } else {
+                    const result = JSON.parse(JSON.stringify(results));
+                    resObj.data = result;
+                    res.send(resObj)
+                }
+            })
+        }
+    })
+}
+/**
+ *  添加用户，向数据表插入数据
+ */
+function addUser(req, res) {
+    const resObj = Common.clone(Constant.ADD_USER_SUCCESS);
+    //mysql插入语句
+    const sql = `insert  into admin(username,password,role,created_at,updated_at)  values(${req.query.username},${req.query.password},${req.query.role},${utils.NowTime},${utils.NowTime})`
+    console.log(utils.NowTime());
+
+    if (req.query.username && req.query.password && req.query.role) {
+
+    } else {
+        if (!req.query.username) {
+            res.send(Constant.ADD_USER_ERROR_LACK_USERNAME)
+        }
+        if (!req.query.password) {
+            res.send(Constant.ADD_USER_ERROR_LACK_PASSWORD)
+        }
+        if (!req.query.role) {
+            res.send(Constant.ADD_USER_ERROR_LACK_ROLE);
+        }
+
+    }
+}
 module.exports = {
     user,
-    login
+    login,
+    addUser
 }
