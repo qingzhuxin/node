@@ -30,7 +30,24 @@ const obj = {
     ADMIN_NOT_EXSIT: {
         code: 102,
         msg: "管理员信息不存在"
-    }
+    },
+    ADD_USER_SUCCESS: {
+        code: 200,
+        msg: "添加成功"
+    },
+    ADD_USER_ERROR_LACK_ROLE: {
+        code: 401,
+        msg: "请设置用户角色"
+    },
+    ADD_USER_ERROR_LACK_USERNAME: {
+        code: 401,
+        msg: "请设置用户登录名"
+    },
+    ADD_USER_ERROR_LACK_PASSWORD: {
+        code: 401,
+        msg: "请设置用户登录密码"
+    },
+
 };
 
 module.exports = obj;
